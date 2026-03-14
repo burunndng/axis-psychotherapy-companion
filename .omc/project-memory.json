@@ -119,20 +119,26 @@
   "hotPaths": [
     {
       "path": "components/chat-interface.tsx",
-      "accessCount": 31,
-      "lastAccessed": 1773451759586,
-      "type": "file"
-    },
-    {
-      "path": "lib/axis-prompt.ts",
-      "accessCount": 13,
-      "lastAccessed": 1773451738222,
+      "accessCount": 66,
+      "lastAccessed": 1773453694026,
       "type": "file"
     },
     {
       "path": "components/session-setup.tsx",
-      "accessCount": 13,
-      "lastAccessed": 1773451886799,
+      "accessCount": 27,
+      "lastAccessed": 1773453232323,
+      "type": "file"
+    },
+    {
+      "path": "lib/axis-prompt.ts",
+      "accessCount": 15,
+      "lastAccessed": 1773453214602,
+      "type": "file"
+    },
+    {
+      "path": "app/page.tsx",
+      "accessCount": 10,
+      "lastAccessed": 1773452594477,
       "type": "file"
     },
     {
@@ -149,14 +155,14 @@
     },
     {
       "path": "app/globals.css",
-      "accessCount": 7,
-      "lastAccessed": 1773451883935,
+      "accessCount": 8,
+      "lastAccessed": 1773452291963,
       "type": "file"
     },
     {
-      "path": "app/page.tsx",
+      "path": "lib/prisma-briefs.ts",
       "accessCount": 7,
-      "lastAccessed": 1773451890707,
+      "lastAccessed": 1773453859745,
       "type": "file"
     },
     {
@@ -178,21 +184,39 @@
       "type": "file"
     },
     {
+      "path": "",
+      "accessCount": 4,
+      "lastAccessed": 1773452904594,
+      "type": "directory"
+    },
+    {
       "path": "components/auth-provider.tsx",
       "accessCount": 3,
       "lastAccessed": 1773450209457,
       "type": "file"
     },
     {
-      "path": "",
+      "path": "lib/session-export.ts",
       "accessCount": 3,
-      "lastAccessed": 1773451006041,
-      "type": "directory"
+      "lastAccessed": 1773452908127,
+      "type": "file"
     },
     {
       "path": "lib/firebase.ts",
+      "accessCount": 3,
+      "lastAccessed": 1773452944270,
+      "type": "file"
+    },
+    {
+      "path": "lib/past-session-rag.ts",
+      "accessCount": 3,
+      "lastAccessed": 1773453795160,
+      "type": "file"
+    },
+    {
+      "path": "app/api/briefs/save/route.ts",
       "accessCount": 2,
-      "lastAccessed": 1773450191912,
+      "lastAccessed": 1773453613863,
       "type": "file"
     },
     {
@@ -205,12 +229,6 @@
       "path": "README.md",
       "accessCount": 1,
       "lastAccessed": 1773448334296,
-      "type": "file"
-    },
-    {
-      "path": "lib/session-export.ts",
-      "accessCount": 1,
-      "lastAccessed": 1773448615065,
       "type": "file"
     },
     {
@@ -229,6 +247,24 @@
       "path": "CLERK_SETUP.md",
       "accessCount": 1,
       "lastAccessed": 1773450259650,
+      "type": "file"
+    },
+    {
+      "path": "lib/firestore-briefs.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773452951846,
+      "type": "file"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "accessCount": 1,
+      "lastAccessed": 1773453591241,
+      "type": "file"
+    },
+    {
+      "path": "lib/briefs-client.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773453670308,
       "type": "file"
     }
   ],

@@ -1,4 +1,4 @@
-import { StoredBrief } from './firestore-briefs';
+import { StoredBrief } from './briefs-client';
 
 /**
  * Lightweight fast pattern matching from past briefs

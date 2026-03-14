@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { SessionConfig, buildAxisPrompt, buildKnowledgeAddendum } from '@/lib/axis-prompt';
 import { semanticSearch } from '@/lib/knowledge-base';
 import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Language } from '@/lib/session-export';
-import { saveBriefToFirestore, fetchUserBriefs, formatBriefDate, type StoredBrief } from '@/lib/firestore-briefs';
+import { saveBriefToPostgres, fetchUserBriefs, formatBriefDate, type StoredBrief } from '@/lib/briefs-client';
 import { searchPastBriefs, buildPastSessionContext } from '@/lib/past-session-rag';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -290,7 +290,7 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
   // Fetch past briefs on mount and when debrief starts
   useEffect(() => {
     if (user && (isDebriefing || messages.length === 0)) {
-      fetchUserBriefs(user.id).then(setPastBriefs).catch(() => {});
+      fetchUserBriefs().then(setPastBriefs).catch(() => {});
     }
   }, [isDebriefing, user, messages.length]);
 
@@ -313,15 +313,15 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
       if (responseText) {
         setDebriefContent(responseText);
 
-        // Save brief to Firestore
+        // Save brief to Postgres
         try {
           const sessionId = Date.now().toString();
-          await saveBriefToFirestore(user.id, responseText, config, messages, sessionId);
+          await saveBriefToPostgres(responseText, config, messages, sessionId);
           // Fetch updated brief history
-          const briefs = await fetchUserBriefs(user.id);
+          const briefs = await fetchUserBriefs();
           setPastBriefs(briefs);
-        } catch (firestoreError) {
-          console.error('Failed to save brief to Firestore:', firestoreError);
+        } catch (dbError) {
+          console.error('Failed to save brief to Postgres:', dbError);
         }
       }
     } catch (error) {
