@@ -17,7 +17,7 @@ const i18n = {
     model: 'AI Model',
     grok: 'Grok — Fast & sharp',
     kimi: 'Kimi — Deep reasoning',
-    stepfun: 'Stepfun — Ultra-fast free',
+    mimo: 'Mimo — Ultra-fast flash',
     challengeLevel: 'Challenge Level',
     sessionIntention: 'Session Intention',
     intentionPlaceholder: 'What is the core focus today?',
@@ -53,7 +53,7 @@ const i18n = {
     model: 'Modelo IA',
     grok: 'Grok — Rápido y agudo',
     kimi: 'Kimi — Razonamiento profundo',
-    stepfun: 'Stepfun — Ultra-rápido gratis',
+    mimo: 'Mimo — Flash ultra-rápido',
     challengeLevel: 'Nivel de Desafío',
     sessionIntention: 'Intención de Sesión',
     intentionPlaceholder: '¿Cuál es el enfoque principal hoy?',
@@ -296,7 +296,7 @@ export function SessionSetup({ onStart, onImport }: SessionSetupProps) {
             >
               <option value="grok">{texts.grok}</option>
               <option value="kimi">{texts.kimi}</option>
-              <option value="stepfun">{texts.stepfun}</option>
+              <option value="mimo">{texts.mimo}</option>
             </select>
           </motion.div>
 

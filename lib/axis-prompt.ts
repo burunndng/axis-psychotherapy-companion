@@ -2,7 +2,7 @@ export type ChallengeLevel = 'default' | 'gentle' | 'balanced' | 'intense' | 'so
 export type ActivityType = 'Explore' | 'Debrief' | 'Plan';
 export type HelpType = 'Process' | 'Decide' | 'Understand' | 'Validate' | 'Vent';
 export type Urgency = 'Reflective' | 'Crisis';
-export type ModelChoice = 'grok' | 'kimi' | 'stepfun';
+export type ModelChoice = 'grok' | 'kimi' | 'mimo';
 
 export interface SessionConfig {
   challengeLevel: ChallengeLevel;
