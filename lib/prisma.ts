@@ -2,10 +2,19 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
+const connectionString = process.env.DATABASE_URL;
+
 export const prisma =
   globalForPrisma.prisma ||
-  new PrismaClient({
-    log: ['error'],
-  });
+  new PrismaClient(
+    connectionString
+      ? {
+          datasourceUrl: connectionString,
+          log: ['error'],
+        }
+      : {
+          log: ['error'],
+        }
+  );
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
