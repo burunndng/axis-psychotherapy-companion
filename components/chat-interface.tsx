@@ -244,17 +244,32 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
         }
       }
 
-      // ROUTER CALL: Decide if external knowledge is needed
-      const routerDecision = await shouldUseKnowledge(conversationMessages);
+      // RAG: Inject clinical knowledge
       let knowledgeAddendum: string | undefined;
 
-      if (routerDecision.needed && routerDecision.query) {
-        // Semantic search for relevant knowledge
-        const searchResults = semanticSearch(routerDecision.query, 2);
+      if (config.activityType === 'Plan') {
+        // Plan mode: always search — planning always benefits from structured frameworks.
+        // Use broader context (last 4 messages + intention) and return top 3 entries.
+        const planQueryParts = [
+          config.intention,
+          ...conversationMessages.slice(-4).map(m => m.content)
+        ].filter(Boolean).join(' ');
+        const searchResults = semanticSearch(planQueryParts, 3);
         if (searchResults.length > 0) {
           knowledgeAddendum = buildKnowledgeAddendum(
             searchResults.map(r => r.entry)
           );
+        }
+      } else {
+        // All other modes: lightweight router decides if knowledge is needed
+        const routerDecision = await shouldUseKnowledge(conversationMessages);
+        if (routerDecision.needed && routerDecision.query) {
+          const searchResults = semanticSearch(routerDecision.query, 2);
+          if (searchResults.length > 0) {
+            knowledgeAddendum = buildKnowledgeAddendum(
+              searchResults.map(r => r.entry)
+            );
+          }
         }
       }
 
