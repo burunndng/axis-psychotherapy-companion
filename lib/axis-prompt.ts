@@ -2,6 +2,7 @@ export type ChallengeLevel = 'default' | 'gentle' | 'balanced' | 'intense' | 'so
 export type ActivityType = 'Explore' | 'Debrief' | 'Plan';
 export type HelpType = 'Process' | 'Decide' | 'Understand' | 'Validate' | 'Vent';
 export type Urgency = 'Reflective' | 'Crisis';
+export type ModelChoice = 'grok' | 'kimi' | 'stepfun';
 
 export interface SessionConfig {
   challengeLevel: ChallengeLevel;
@@ -9,6 +10,7 @@ export interface SessionConfig {
   activityType: ActivityType;
   helpType: HelpType;
   urgency: Urgency;
+  model?: ModelChoice;
 }
 
 import { formatKnowledgeForPrompt, KnowledgeEntry } from './knowledge-base';

@@ -6,6 +6,7 @@ import { SessionConfig, buildAxisPrompt, buildKnowledgeAddendum } from '@/lib/ax
 import { semanticSearch } from '@/lib/knowledge-base';
 import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Language } from '@/lib/session-export';
 import { saveBriefToFirestore, fetchUserBriefs, formatBriefDate, type StoredBrief } from '@/lib/firestore-briefs';
+import { searchPastBriefs, buildPastSessionContext } from '@/lib/past-session-rag';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Send, Download, Printer, FileJson, History } from 'lucide-react';
@@ -68,6 +69,21 @@ export function ChatInterface({ config, onReset, initialMessages }: ChatInterfac
 
   const texts = i18n[language];
 
+  // Map model choice to OpenRouter model ID
+  const getModelId = (model?: string): string => {
+    switch (model) {
+      case 'kimi':
+        return 'moonshotai/kimi-k2.5';
+      case 'stepfun':
+        return 'stepfun/step-3.5-flash:free';
+      case 'grok':
+      default:
+        return 'x-ai/grok-4.1-fast';
+    }
+  };
+
+  const currentModel = getModelId(config.model);
+
   useEffect(() => {
     if (!apiKey) {
       console.error('NEXT_PUBLIC_OPENROUTER_API_KEY is missing');
@@ -129,7 +145,7 @@ export function ChatInterface({ config, onReset, initialMessages }: ChatInterfac
           'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : '',
         },
         body: JSON.stringify({
-          model: 'x-ai/grok-4.1-fast',
+          model: currentModel,
           messages: [
             {
               role: 'system',
@@ -181,7 +197,7 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
         'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : '',
       },
       body: JSON.stringify({
-        model: 'x-ai/grok-4.1-fast',
+        model: currentModel,
         messages: [
           { role: 'system', content: finalSystemInstruction },
           ...conversationMessages
@@ -210,7 +226,7 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
     setIsLoading(true);
 
     try {
-      const systemInstruction = buildAxisPrompt(config);
+      let systemInstruction = buildAxisPrompt(config);
 
       const conversationMessages: OpenRouterMessage[] = messages.map((msg) => ({
         role: msg.role === 'model' ? 'assistant' : 'user',
@@ -218,7 +234,17 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
       }));
       conversationMessages.push({ role: 'user', content: userMessage });
 
-      // ROUTER CALL: Decide if knowledge is needed
+      // FAST: Search past briefs for relevant patterns (if available)
+      let pastSessionContext: string | undefined;
+      if (pastBriefs.length > 0) {
+        const matches = searchPastBriefs(userMessage, config.intention, pastBriefs);
+        if (matches.length > 0) {
+          pastSessionContext = buildPastSessionContext(matches);
+          systemInstruction = `${systemInstruction}\n\n${pastSessionContext}`;
+        }
+      }
+
+      // ROUTER CALL: Decide if external knowledge is needed
       const routerDecision = await shouldUseKnowledge(conversationMessages);
       let knowledgeAddendum: string | undefined;
 
@@ -232,7 +258,7 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
         }
       }
 
-      // Call AXIS with optional knowledge addendum
+      // Call AXIS with optional knowledge addendum + past session context
       const responseText = await callOpenRouter(conversationMessages, systemInstruction, knowledgeAddendum);
 
       if (responseText) {
@@ -261,12 +287,12 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
   const [pastBriefs, setPastBriefs] = useState<StoredBrief[]>([]);
   const [showBriefHistory, setShowBriefHistory] = useState(false);
 
-  // Fetch past briefs when debrief starts
+  // Fetch past briefs on mount and when debrief starts
   useEffect(() => {
-    if (isDebriefing && user) {
-      fetchUserBriefs(user.id).then(setPastBriefs);
+    if (user && (isDebriefing || messages.length === 0)) {
+      fetchUserBriefs(user.id).then(setPastBriefs).catch(() => {});
     }
-  }, [isDebriefing, user]);
+  }, [isDebriefing, user, messages.length]);
 
   const handleEndSession = async () => {
     if (!apiKey || isLoading || !user) return;

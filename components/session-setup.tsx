@@ -14,6 +14,10 @@ const i18n = {
     title: 'AXIS Protocol',
     subtitle: 'Configure the parameters for your session.',
     language: 'Language',
+    model: 'AI Model',
+    grok: 'Grok — Fast & sharp',
+    kimi: 'Kimi — Deep reasoning',
+    stepfun: 'Stepfun — Ultra-fast free',
     challengeLevel: 'Challenge Level',
     sessionIntention: 'Session Intention',
     intentionPlaceholder: 'What is the core focus today?',
@@ -46,6 +50,10 @@ const i18n = {
     title: 'Protocolo AXIS',
     subtitle: 'Configura los parámetros de tu sesión.',
     language: 'Idioma',
+    model: 'Modelo IA',
+    grok: 'Grok — Rápido y agudo',
+    kimi: 'Kimi — Razonamiento profundo',
+    stepfun: 'Stepfun — Ultra-rápido gratis',
     challengeLevel: 'Nivel de Desafío',
     sessionIntention: 'Intención de Sesión',
     intentionPlaceholder: '¿Cuál es el enfoque principal hoy?',
@@ -96,6 +104,7 @@ export function SessionSetup({ onStart, onImport }: SessionSetupProps) {
     activityType: 'Explore',
     helpType: 'Process',
     urgency: 'Reflective',
+    model: 'grok',
   });
   const [importError, setImportError] = useState(false);
 
@@ -267,6 +276,27 @@ export function SessionSetup({ onStart, onImport }: SessionSetupProps) {
               <option value="balanced">{texts.balanced}</option>
               <option value="intense">{texts.intense}</option>
               <option value="socratic">{texts.socratic}</option>
+            </select>
+          </motion.div>
+
+          {/* AI Model */}
+          <motion.div
+            custom={1.5}
+            variants={fieldVariants}
+            className="space-y-2"
+          >
+            <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
+              {texts.model}
+            </label>
+            <select
+              name="model"
+              value={config.model || 'grok'}
+              onChange={handleChange}
+              className="input-void"
+            >
+              <option value="grok">{texts.grok}</option>
+              <option value="kimi">{texts.kimi}</option>
+              <option value="stepfun">{texts.stepfun}</option>
             </select>
           </motion.div>
 
