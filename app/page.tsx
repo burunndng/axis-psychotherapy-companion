@@ -6,8 +6,20 @@ import { ChatInterface } from '@/components/chat-interface';
 import { SessionConfig } from '@/lib/axis-prompt';
 import { motion, AnimatePresence } from 'motion/react';
 
+interface ImportedMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+}
+
 export default function Home() {
   const [sessionConfig, setSessionConfig] = useState<SessionConfig | null>(null);
+  const [importedMessages, setImportedMessages] = useState<ImportedMessage[] | null>(null);
+
+  const handleImport = (config: SessionConfig, messages: ImportedMessage[]) => {
+    setImportedMessages(messages);
+    setSessionConfig(config);
+  };
 
   return (
     <main className="relative min-h-screen bg-void-0 p-4 md:p-8 font-sans text-slate-200 flex flex-col items-center justify-center">
@@ -16,7 +28,7 @@ export default function Home() {
 
       <AnimatePresence mode="wait">
         {!sessionConfig ? (
-          <SessionSetupPage onStart={setSessionConfig} key="setup" />
+          <SessionSetupPage onStart={setSessionConfig} onImport={handleImport} key="setup" />
         ) : (
           <motion.div
             key="chat"
@@ -25,7 +37,7 @@ export default function Home() {
             transition={{ type: "spring", stiffness: 220, damping: 26, mass: 0.9 }}
             className="w-full max-w-4xl relative z-10"
           >
-            <ChatInterface config={sessionConfig} onReset={() => setSessionConfig(null)} />
+            <ChatInterface config={sessionConfig} onReset={() => { setSessionConfig(null); setImportedMessages(null); }} initialMessages={importedMessages} />
           </motion.div>
         )}
       </AnimatePresence>

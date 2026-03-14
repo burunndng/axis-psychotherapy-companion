@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { SessionConfig, ChallengeLevel, ActivityType, HelpType, Urgency } from '@/lib/axis-prompt';
 import { RitualThreshold } from './ritual-threshold';
 import { motion } from 'motion/react';
+import { Upload } from 'lucide-react';
 
 type Language = 'en' | 'es';
 
@@ -38,6 +39,8 @@ const i18n = {
     vent: 'Vent',
     reflective: 'Reflective',
     crisis: 'Crisis',
+    importSession: 'Import Previous Session',
+    importError: 'Invalid session file.',
   },
   es: {
     title: 'Protocolo AXIS',
@@ -68,14 +71,23 @@ const i18n = {
     vent: 'Desahogar',
     reflective: 'Reflexivo',
     crisis: 'Crisis',
+    importSession: 'Importar Sesión Anterior',
+    importError: 'Archivo de sesión inválido.',
   },
 };
 
-interface SessionSetupProps {
-  onStart: (config: SessionConfig) => void;
+interface ImportedMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
 }
 
-export function SessionSetup({ onStart }: SessionSetupProps) {
+interface SessionSetupProps {
+  onStart: (config: SessionConfig) => void;
+  onImport?: (config: SessionConfig, messages: ImportedMessage[]) => void;
+}
+
+export function SessionSetup({ onStart, onImport }: SessionSetupProps) {
   const { user } = useUser();
   const [language, setLanguage] = useState<Language>('en');
   const [config, setConfig] = useState<SessionConfig>({
@@ -85,8 +97,34 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
     helpType: 'Process',
     urgency: 'Reflective',
   });
+  const [importError, setImportError] = useState(false);
 
   const texts = i18n[language];
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target?.result as string);
+        if (!data.config || !data.messages || !data.metadata) {
+          setImportError(true);
+          return;
+        }
+        const restored = data.messages.map((m: { role: string; text: string }, i: number) => ({
+          id: `imported-${Date.now()}-${i}`,
+          role: m.role as 'user' | 'model',
+          text: m.text,
+        }));
+        setImportError(false);
+        onImport?.(data.config as SessionConfig, restored);
+      } catch {
+        setImportError(true);
+      }
+    };
+    reader.readAsText(file);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -340,6 +378,17 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
               {texts.begin}
             </motion.button>
           </motion.div>
+
+          {/* Import Button */}
+          <motion.div custom={7} variants={fieldVariants}>
+            <input type="file" accept=".json" id="import-file" className="sr-only" onChange={handleImport} />
+            <label htmlFor="import-file"
+              className="w-full flex items-center justify-center gap-2 py-3 font-sans text-sm tracking-wide rounded-lg border border-white/5 text-slate-500 hover:text-slate-300 hover:border-white/10 cursor-pointer transition-all duration-200">
+              <Upload className="w-4 h-4" />
+              {texts.importSession}
+            </label>
+            {importError && <p className="text-xs text-rose-400/70 mt-2 text-center">{texts.importError}</p>}
+          </motion.div>
         </motion.form>
       </div>
     </motion.div>
@@ -350,7 +399,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
  * SessionSetupPage — Full page wrapper with ritual threshold
  * Includes the sacred geometry ritual threshold as visual entry point
  */
-export function SessionSetupPage({ onStart }: SessionSetupProps) {
+export function SessionSetupPage({ onStart, onImport }: SessionSetupProps) {
   return (
     <motion.div
       className="w-full max-w-2xl"
@@ -363,7 +412,7 @@ export function SessionSetupPage({ onStart }: SessionSetupProps) {
       <RitualThreshold />
 
       {/* Setup Form */}
-      <SessionSetup onStart={onStart} />
+      <SessionSetup onStart={onStart} onImport={onImport} />
     </motion.div>
   );
 }

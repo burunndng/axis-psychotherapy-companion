@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'motion/react';
 interface ChatInterfaceProps {
   config: SessionConfig;
   onReset?: () => void;
+  initialMessages?: { id: string; role: 'user' | 'model'; text: string }[] | null;
 }
 
 interface Message {
@@ -52,9 +53,9 @@ const i18n = {
   },
 };
 
-export function ChatInterface({ config, onReset }: ChatInterfaceProps) {
+export function ChatInterface({ config, onReset, initialMessages }: ChatInterfaceProps) {
   const { user } = useUser();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages ?? []);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
@@ -69,6 +70,11 @@ export function ChatInterface({ config, onReset }: ChatInterfaceProps) {
   useEffect(() => {
     if (!apiKey) {
       console.error('NEXT_PUBLIC_OPENROUTER_API_KEY is missing');
+      return;
+    }
+
+    // Skip auto-greeting if restoring from imported session
+    if (initialMessages && initialMessages.length > 0) {
       return;
     }
 
@@ -376,8 +382,8 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
   return (
     <div className={`flex flex-col h-[calc(100vh-4rem)] w-full rounded-2xl border shadow-2xl overflow-hidden relative transition-all duration-300 ${
       isCrisis
-        ? 'bg-void-0 border-amber-500/30'
-        : 'bg-void-0 border-white/5'
+        ? 'bg-void-1 border-amber-500/30'
+        : 'bg-void-1 border-white/5'
     }`}>
       {/* Crisis Banner */}
       {isCrisis && (
@@ -391,10 +397,10 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
       )}
 
       {/* Header */}
-      <div className={`px-8 py-6 border-b backdrop-blur-md z-10 flex items-center justify-between transition-all duration-300 ${
+      <div className={`px-8 py-6 border-b z-10 flex items-center justify-between transition-all duration-300 shadow-[0_1px_0_oklch(100%_0_0/0.04)] ${
         isCrisis
-          ? 'border-amber-500/20 bg-void-1/80'
-          : 'border-white/5 bg-void-1/80'
+          ? 'border-amber-500/30 bg-void-2'
+          : 'border-emerald-900/30 bg-void-2'
       }`}>
         <div>
           <h2 className="text-2xl font-serif text-slate-100 tracking-wide">AXIS</h2>
@@ -431,7 +437,12 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-8 space-y-10 z-10 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto p-8 space-y-8 z-10 custom-scrollbar bg-void-0">
+        {initialMessages && initialMessages.length > 0 && (
+          <div className="text-xs text-slate-600 text-center py-2 select-none">
+            — resumed from previous session —
+          </div>
+        )}
         <AnimatePresence initial={false}>
           {messages.map((msg, idx) => (
             <motion.div
@@ -448,13 +459,15 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
               className={`flex w-full ${msg.role === 'user' ? 'justify-end pl-12' : 'justify-start pr-12'}`}
             >
               {msg.role === 'user' ? (
-                <div className="bg-void-3 text-slate-300 px-6 py-4 rounded-2xl rounded-tr-sm border border-white/5 text-[15px] leading-relaxed shadow-sm">
+                <div className="bg-void-4 text-slate-300 px-6 py-4 rounded-2xl rounded-tr-sm border border-white/[0.07] text-[15px] leading-relaxed shadow-[0_2px_8px_oklch(0%_0_0/0.4)] max-w-[80%]">
                   <p className="whitespace-pre-wrap">{msg.text}</p>
                 </div>
               ) : (
-                <div className="w-full">
-                  <div className="prose prose-invert prose-slate max-w-none prose-p:leading-relaxed prose-headings:font-serif prose-headings:text-slate-100 prose-p:text-slate-300 text-[16px]">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
+                <div className="max-w-[92%]">
+                  <div className="bg-void-2 border border-white/5 rounded-2xl rounded-tl-sm px-5 py-4 shadow-[0_2px_12px_oklch(0%_0_0/0.3)]">
+                    <div className="prose prose-invert prose-slate max-w-none prose-p:leading-relaxed prose-headings:font-serif prose-headings:text-slate-100 prose-p:text-slate-300 text-[16px]">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               )}
@@ -493,7 +506,7 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
       </div>
 
       {/* Input */}
-      <div className="p-6 bg-void-1/90 backdrop-blur-md border-t border-white/5 z-10">
+      <div className="p-6 bg-void-2 border-t border-white/5 z-10 shadow-[0_-1px_0_oklch(100%_0_0/0.04)]">
         <div className="relative flex items-end max-w-4xl mx-auto">
           <textarea
             value={input}
