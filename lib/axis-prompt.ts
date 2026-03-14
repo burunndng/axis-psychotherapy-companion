@@ -11,7 +11,21 @@ export interface SessionConfig {
   urgency: Urgency;
 }
 
+import { retrieveRelevantKnowledge, formatKnowledgeForPrompt } from './knowledge-base';
+
 export function buildAxisPrompt(config: SessionConfig): string {
+  // Retrieve relevant clinical knowledge based on session context
+  const sessionKeywords = [
+    config.challengeLevel,
+    config.activityType.toLowerCase(),
+    config.helpType.toLowerCase(),
+    'insight',
+    'change',
+    'pattern'
+  ];
+
+  const relevantKnowledge = retrieveRelevantKnowledge(sessionKeywords);
+  const knowledgeContext = formatKnowledgeForPrompt(relevantKnowledge);
   const identityTexts: Record<ChallengeLevel, string> = {
     default: `You are AXIS — a sharp, deeply perceptive thinking partner. You help the user think more clearly and honestly. You notice what's underneath — the patterns, protections, and dynamics they can't yet see. You speak plainly.`,
     gentle: `You are AXIS — a warm but precise thinking partner. You hold space without coddling. You help the user unknot their thinking with patience and honesty, meeting them where they are — including the parts they haven't met yet.`,
@@ -42,6 +56,7 @@ export function buildAxisPrompt(config: SessionConfig): string {
   return `════════════════════════════════════════════
 AXIS SESSION PROTOCOL
 ════════════════════════════════════════════
+${knowledgeContext}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 IDENTITY
