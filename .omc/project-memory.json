@@ -119,8 +119,8 @@
   "hotPaths": [
     {
       "path": "components/chat-interface.tsx",
-      "accessCount": 22,
-      "lastAccessed": 1773451304235,
+      "accessCount": 25,
+      "lastAccessed": 1773451671205,
       "type": "file"
     },
     {
@@ -130,15 +130,15 @@
       "type": "file"
     },
     {
-      "path": "package.json",
-      "accessCount": 7,
-      "lastAccessed": 1773450695451,
+      "path": "lib/axis-prompt.ts",
+      "accessCount": 9,
+      "lastAccessed": 1773451507583,
       "type": "file"
     },
     {
-      "path": "lib/axis-prompt.ts",
+      "path": "package.json",
       "accessCount": 7,
-      "lastAccessed": 1773451399848,
+      "lastAccessed": 1773450695451,
       "type": "file"
     },
     {
@@ -163,6 +163,12 @@
       "path": "app/layout.tsx",
       "accessCount": 4,
       "lastAccessed": 1773450695499,
+      "type": "file"
+    },
+    {
+      "path": "lib/knowledge-base.ts",
+      "accessCount": 4,
+      "lastAccessed": 1773451514414,
       "type": "file"
     },
     {
@@ -205,12 +211,6 @@
       "path": "lib/session-export.ts",
       "accessCount": 1,
       "lastAccessed": 1773448615065,
-      "type": "file"
-    },
-    {
-      "path": "lib/knowledge-base.ts",
-      "accessCount": 1,
-      "lastAccessed": 1773449921937,
       "type": "file"
     },
     {

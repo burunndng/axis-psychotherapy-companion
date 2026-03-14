@@ -51,7 +51,7 @@ const i18n = {
   },
 };
 
-export function ChatInterface({ config }: ChatInterfaceProps) {
+export function ChatInterface({ config, onReset }: ChatInterfaceProps) {
   const { user } = useUser();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
