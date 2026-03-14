@@ -37,6 +37,15 @@ export function buildAxisPrompt(config: SessionConfig): string {
   const identityText = identityTexts[config.challengeLevel];
   const mandateText = mandateTexts[config.challengeLevel];
 
+  // Extract prior brief if imported as markdown
+  let intention = config.intention;
+  let priorBriefContext = '';
+  if (intention.includes('{{prior_brief}}')) {
+    const parts = intention.split('{{prior_brief}}');
+    intention = parts[0].trim();
+    priorBriefContext = parts[1] ? `\n\n## Prior Session Context\n${parts[1].trim()}\n` : '';
+  }
+
   const modeCalibration = {
     gentle: `Gentler approach selected. Be patient, be kind — but don't withhold truth. When you notice protective patterns, approach with curiosity and warmth rather than confrontation. Validate and sit with feeling MORE here, but always in service of clarity. Meet the defense with compassion — name what it's protecting without pressuring the user to drop it before they're ready.`,
     balanced: `Balanced approach. Read the moment — sometimes the user needs warmth, sometimes pressure. Match your perceptual depth to their readiness. Name patterns when they're ready to see them. Hold back when pushing would cause withdrawal rather than insight.`,
@@ -87,7 +96,7 @@ Activity Type: ${config.activityType}
 Help Type: ${config.helpType}
 Urgency: ${config.urgency}
 
-Session Intention: ${config.intention}
+Session Intention: ${intention}${priorBriefContext}
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

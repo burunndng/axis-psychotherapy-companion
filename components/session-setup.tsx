@@ -116,7 +116,22 @@ export function SessionSetup({ onStart, onImport }: SessionSetupProps) {
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const data = JSON.parse(ev.target?.result as string);
+        const content = ev.target?.result as string;
+
+        // Handle .md files - import as prior brief context
+        if (file.name.endsWith('.md')) {
+          // Store markdown brief in intention for context
+          const updatedConfig = {
+            ...config,
+            intention: `${config.intention}\n\n{{prior_brief}}\n${content}`,
+          };
+          setImportError(false);
+          onImport?.(updatedConfig, []);
+          return;
+        }
+
+        // Handle .json files - full session import
+        const data = JSON.parse(content);
         if (!data.config || !data.messages || !data.metadata) {
           setImportError(true);
           return;
@@ -411,7 +426,7 @@ export function SessionSetup({ onStart, onImport }: SessionSetupProps) {
 
           {/* Import Button */}
           <motion.div custom={7} variants={fieldVariants}>
-            <input type="file" accept=".json" id="import-file" className="sr-only" onChange={handleImport} />
+            <input type="file" accept=".json,.md" id="import-file" className="sr-only" onChange={handleImport} />
             <label htmlFor="import-file"
               className="w-full flex items-center justify-center gap-2 py-3 font-sans text-sm tracking-wide rounded-lg border border-white/5 text-slate-500 hover:text-slate-300 hover:border-white/10 cursor-pointer transition-all duration-200">
               <Upload className="w-4 h-4" />
