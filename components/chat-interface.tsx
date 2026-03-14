@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { SessionConfig, buildAxisPrompt, buildKnowledgeAddendum } from '@/lib/axis-prompt';
+import { SessionConfig, ActivityType, buildAxisPrompt, buildKnowledgeAddendum } from '@/lib/axis-prompt';
 import { semanticSearch } from '@/lib/knowledge-base';
 import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Language } from '@/lib/session-export';
 import { saveBriefToPostgres, fetchUserBriefs, formatBriefDate, type StoredBrief } from '@/lib/briefs-client';
@@ -132,9 +132,16 @@ export function ChatInterface({ config, onReset, initialMessages }: ChatInterfac
   }, []);
 
   const shouldUseKnowledge = async (
-    conversationMessages: OpenRouterMessage[]
+    conversationMessages: OpenRouterMessage[],
+    activityType: ActivityType
   ): Promise<{ needed: boolean; query?: string }> => {
     if (!apiKey) return { needed: false };
+
+    const activityPrompt = activityType === 'Explore'
+      ? 'Does this moment call for specific reflective or insight technique knowledge? (defense analysis, mentalization, ego states, projection, resistance work, etc.)'
+      : activityType === 'Debrief'
+      ? 'Does this moment call for pattern-recognition or session-integration knowledge? (script patterns, transference replay, impasse analysis, redecision work, etc.)'
+      : 'Does this moment call for specific clinical technique knowledge? (defense analysis, ego states, ACT techniques, script work, etc.)';
 
     try {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -150,7 +157,7 @@ export function ChatInterface({ config, onReset, initialMessages }: ChatInterfac
             {
               role: 'system',
               content: `You are a clinical knowledge router. Given this conversation excerpt, decide:
-1. Does this moment call for specific clinical technique knowledge? (defense analysis, ego states, ACT techniques, script work, etc.)
+1. ${activityPrompt}
 2. If yes, provide a 3-10 word search query describing what technique is relevant.
 
 Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
@@ -213,7 +220,19 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
     }
 
     const data = await response.json();
-    return data.choices[0]?.message?.content || '';
+    const raw = data.choices[0]?.message?.content || '';
+
+    // The system prompt instructs the model to return JSON with user_facing_response.
+    // Parse it and extract only what the user should see.
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed.user_facing_response !== undefined) {
+        return parsed.user_facing_response;
+      }
+    } catch {
+      // Not JSON — model returned plain text, use as-is
+    }
+    return raw;
   };
 
   const handleSend = async () => {
@@ -248,13 +267,20 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
       let knowledgeAddendum: string | undefined;
 
       if (config.activityType === 'Plan') {
-        // Plan mode: always search — planning always benefits from structured frameworks.
-        // Use broader context (last 4 messages + intention) and return top 3 entries.
-        const planQueryParts = [
-          config.intention,
-          ...conversationMessages.slice(-4).map(m => m.content)
-        ].filter(Boolean).join(' ');
-        const searchResults = semanticSearch(planQueryParts, 3);
+        // Plan mode: always search — planning benefits from structured frameworks.
+        // Narrow query: intention + current message only (avoids TF-IDF noise from 4 messages).
+        const planQuery = [config.intention, userMessage].filter(Boolean).join(' ');
+        const searchResults = semanticSearch(planQuery, 3);
+        if (searchResults.length > 0) {
+          knowledgeAddendum = buildKnowledgeAddendum(
+            searchResults.map(r => r.entry)
+          );
+        }
+      } else if (config.activityType === 'Debrief') {
+        // Debrief mode: always search — retrospective pattern-review reliably benefits from PDT/TA knowledge.
+        // Skip router; narrow query: intention + current message.
+        const debriefQuery = [config.intention, userMessage].filter(Boolean).join(' ');
+        const searchResults = semanticSearch(debriefQuery, 2);
         if (searchResults.length > 0) {
           knowledgeAddendum = buildKnowledgeAddendum(
             searchResults.map(r => r.entry)
@@ -262,7 +288,7 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
         }
       } else {
         // All other modes: lightweight router decides if knowledge is needed
-        const routerDecision = await shouldUseKnowledge(conversationMessages);
+        const routerDecision = await shouldUseKnowledge(conversationMessages, config.activityType);
         if (routerDecision.needed && routerDecision.query) {
           const searchResults = semanticSearch(routerDecision.query, 2);
           if (searchResults.length > 0) {
