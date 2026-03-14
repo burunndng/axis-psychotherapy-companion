@@ -1,0 +1,7 @@
+{
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"/home/trip/Videos/AOS-claude-audit-prisma-with-ilp-images-01AAnWp3yV65Nc5JrnuEXbak/.claude/skills/alchemical-void-ui-system\"}",
+  "error": "EISDIR: illegal operation on a directory, read '/home/trip/Videos/AOS-claude-audit-prisma-with-ilp-images-01AAnWp3yV65Nc5JrnuEXbak/.claude/skills/alchemical-void-ui-system'",
+  "timestamp": "2026-03-14T00:38:25.614Z",
+  "retry_count": 1
+}

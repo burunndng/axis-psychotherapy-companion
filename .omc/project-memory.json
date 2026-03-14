@@ -1,0 +1,194 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1773448290799,
+  "projectRoot": "/home/trip/Downloads/axis---psychotherapy-companion",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "15.4.9",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "19.2.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.2.1",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "eslint .",
+      "clean": "next clean"
+    }
+  },
+  "conventions": {
+    "namingStyle": "camelCase",
+    "importStyle": "ES modules",
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "app",
+      "components",
+      "lib"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 3,
+      "lastAccessed": 1773448290770,
+      "keyFiles": [
+        "globals.css",
+        "layout.tsx",
+        "page.tsx"
+      ]
+    },
+    "components": {
+      "path": "components",
+      "purpose": "UI components",
+      "fileCount": 3,
+      "lastAccessed": 1773448290771,
+      "keyFiles": [
+        "auth-provider.tsx",
+        "chat-interface.tsx",
+        "session-setup.tsx"
+      ]
+    },
+    "hooks": {
+      "path": "hooks",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1773448290786,
+      "keyFiles": [
+        "use-mobile.ts"
+      ]
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 4,
+      "lastAccessed": 1773448290788,
+      "keyFiles": [
+        "axis-prompt.ts",
+        "firebase.ts",
+        "prompt-builder.ts",
+        "utils.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "components/chat-interface.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1773448647803,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 3,
+      "lastAccessed": 1773448848881,
+      "type": "file"
+    },
+    {
+      "path": "lib/axis-prompt.ts",
+      "accessCount": 2,
+      "lastAccessed": 1773448505158,
+      "type": "file"
+    },
+    {
+      "path": "components/session-setup.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1773448510580,
+      "type": "file"
+    },
+    {
+      "path": ".env.example",
+      "accessCount": 2,
+      "lastAccessed": 1773448515447,
+      "type": "file"
+    },
+    {
+      "path": "app/globals.css",
+      "accessCount": 2,
+      "lastAccessed": 1773448846047,
+      "type": "file"
+    },
+    {
+      "path": "metadata.json",
+      "accessCount": 1,
+      "lastAccessed": 1773448332015,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1773448334296,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1773448335004,
+      "type": "directory"
+    },
+    {
+      "path": "app/page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1773448337157,
+      "type": "file"
+    },
+    {
+      "path": "lib/firebase.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773448337675,
+      "type": "file"
+    },
+    {
+      "path": "lib/session-export.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773448615065,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
