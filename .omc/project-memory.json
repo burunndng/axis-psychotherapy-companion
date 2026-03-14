@@ -119,20 +119,38 @@
   "hotPaths": [
     {
       "path": "components/chat-interface.tsx",
-      "accessCount": 4,
-      "lastAccessed": 1773448647803,
+      "accessCount": 13,
+      "lastAccessed": 1773450240007,
       "type": "file"
     },
     {
       "path": "package.json",
-      "accessCount": 3,
-      "lastAccessed": 1773448848881,
+      "accessCount": 6,
+      "lastAccessed": 1773450199198,
       "type": "file"
     },
     {
       "path": "lib/axis-prompt.ts",
-      "accessCount": 2,
-      "lastAccessed": 1773448505158,
+      "accessCount": 4,
+      "lastAccessed": 1773449930775,
+      "type": "file"
+    },
+    {
+      "path": ".env.example",
+      "accessCount": 4,
+      "lastAccessed": 1773450250112,
+      "type": "file"
+    },
+    {
+      "path": "components/auth-provider.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450209457,
+      "type": "file"
+    },
+    {
+      "path": "app/layout.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1773450214764,
       "type": "file"
     },
     {
@@ -142,16 +160,22 @@
       "type": "file"
     },
     {
-      "path": ".env.example",
-      "accessCount": 2,
-      "lastAccessed": 1773448515447,
-      "type": "file"
-    },
-    {
       "path": "app/globals.css",
       "accessCount": 2,
       "lastAccessed": 1773448846047,
       "type": "file"
+    },
+    {
+      "path": "lib/firebase.ts",
+      "accessCount": 2,
+      "lastAccessed": 1773450191912,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 2,
+      "lastAccessed": 1773450243893,
+      "type": "directory"
     },
     {
       "path": "metadata.json",
@@ -166,27 +190,39 @@
       "type": "file"
     },
     {
-      "path": "",
-      "accessCount": 1,
-      "lastAccessed": 1773448335004,
-      "type": "directory"
-    },
-    {
       "path": "app/page.tsx",
       "accessCount": 1,
       "lastAccessed": 1773448337157,
       "type": "file"
     },
     {
-      "path": "lib/firebase.ts",
-      "accessCount": 1,
-      "lastAccessed": 1773448337675,
-      "type": "file"
-    },
-    {
       "path": "lib/session-export.ts",
       "accessCount": 1,
       "lastAccessed": 1773448615065,
+      "type": "file"
+    },
+    {
+      "path": "lib/knowledge-base.ts",
+      "accessCount": 1,
+      "lastAccessed": 1773449921937,
+      "type": "file"
+    },
+    {
+      "path": "firebase-applet-config.json",
+      "accessCount": 1,
+      "lastAccessed": 1773449939515,
+      "type": "file"
+    },
+    {
+      "path": "FIREBASE_SETUP.md",
+      "accessCount": 1,
+      "lastAccessed": 1773449948988,
+      "type": "file"
+    },
+    {
+      "path": "CLERK_SETUP.md",
+      "accessCount": 1,
+      "lastAccessed": 1773450259650,
       "type": "file"
     }
   ],

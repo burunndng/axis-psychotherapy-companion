@@ -1,15 +1,13 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { SessionConfig, buildAxisPrompt } from '@/lib/axis-prompt';
 import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Language } from '@/lib/session-export';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Send, Download, Printer, FileJson } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useAuth } from './auth-provider';
-import { db } from '@/lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface ChatInterfaceProps {
   config: SessionConfig;
@@ -52,7 +50,7 @@ const i18n = {
 };
 
 export function ChatInterface({ config }: ChatInterfaceProps) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -199,23 +197,6 @@ export function ChatInterface({ config }: ChatInterfaceProps) {
 
       if (responseText) {
         setDebriefContent(responseText);
-
-        // Save to Firestore
-        try {
-          await addDoc(collection(db, `users/${user.uid}/sessions`), {
-            userId: user.uid,
-            challengeLevel: config.challengeLevel,
-            intention: config.intention,
-            activityType: config.activityType,
-            helpType: config.helpType,
-            urgency: config.urgency,
-            debriefContent: responseText,
-            language,
-            createdAt: serverTimestamp()
-          });
-        } catch (dbError) {
-          console.error("Failed to save session to Firestore:", dbError);
-        }
       }
     } catch (error) {
       console.error('Error ending session:', error);
