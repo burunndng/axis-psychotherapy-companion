@@ -306,6 +306,40 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     keywords: ['integration', 'phasing', 'stabilization', 'depth', 'working-through', 'structural-change']
   },
 
+  // ════════════════════════════════════════════════════════════════
+  // PLAN-NATIVE FRAMEWORKS
+  // ════════════════════════════════════════════════════════════════
+
+  {
+    id: 'plan-001',
+    source: 'Decision & Planning Frameworks',
+    topic: 'Decision Criteria Surfacing',
+    technique: 'Separating Authentic Want from Should-Want',
+    description: 'Technique for exposing hidden decision criteria by distinguishing what the person genuinely wants from what they believe they should want due to external pressure, internalized rules, or fear of judgment.',
+    implementation: 'Ask: "If no one would ever know what you chose, what would you choose?" and "What does the part of you that already knows the answer say?" Surface implicit criteria: status, safety, belonging, autonomy. Name the hidden criterion before evaluating options.',
+    keywords: ['decision', 'criteria', 'planning', 'values', 'should', 'authentic', 'hidden-criteria', 'choice']
+  },
+
+  {
+    id: 'plan-002',
+    source: 'Decision & Planning Frameworks',
+    topic: 'Ambivalence Mapping',
+    technique: 'Charting Pull-Toward-Change vs Pull-Toward-Same',
+    description: 'Explicit mapping of forces pulling toward change versus forces pulling toward staying the same, without prematurely resolving the tension. Mirrors ACT Matrix but oriented toward action commitment rather than psychological flexibility.',
+    implementation: 'Two columns: "What moves toward change" / "What keeps me where I am." Each item named specifically — not "fear" but "fear that X will happen." Ambivalence is not a problem to fix but a map of what matters. Only after full mapping: "What does this map tell you about what you actually value?"',
+    keywords: ['ambivalence', 'planning', 'decision', 'change', 'resistance', 'values', 'committed-action', 'block']
+  },
+
+  {
+    id: 'plan-003',
+    source: 'Decision & Planning Frameworks',
+    topic: 'The Rehearsed Obstacle',
+    technique: 'Identifying and Externalising the Feared Cost',
+    description: 'Identifying the specific feared cost that blocks committed action — the obstacle the person has mentally rehearsed most. Externalising it before planning steps prevents covert sabotage of the plan.',
+    implementation: 'Ask: "What is the thing you are most afraid will happen if you actually follow through?" Name it precisely. Then: "Is that fear about a real likely consequence, a worst-case, or a story from a previous time?" Separate the obstacle from the plan. Only then build concrete next steps.',
+    keywords: ['obstacle', 'planning', 'block', 'committed-action', 'fear', 'sabotage', 'decision', 'follow-through']
+  },
+
   {
     id: 'integration-002',
     source: 'The Mechanics of Insight',
@@ -479,7 +513,7 @@ export function semanticSearch(
   return results
     .sort((a, b) => b.score - a.score)
     .slice(0, topK)
-    .filter(r => r.score > 0); // Only include non-zero scores
+    .filter(r => r.score > 0.05); // Minimum similarity threshold — eliminates trivial matches
 }
 
 export default KNOWLEDGE_BASE;
