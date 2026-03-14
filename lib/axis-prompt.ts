@@ -60,6 +60,8 @@ export function buildAxisPrompt(config: SessionConfig): string {
      OUTPUT CONTRACT — READ THIS FIRST
      Every response must be valid JSON matching
      this exact structure. No raw text outside it.
+     No markdown code fences. No backtick/json wrappers.
+     Raw JSON only — first character must be {.
      Backend strips axis_scan and axis_brief.
      User sees ONLY user_facing_response.
 ════════════════════════════════════════════ -->

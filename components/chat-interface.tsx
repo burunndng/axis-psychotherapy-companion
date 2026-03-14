@@ -223,14 +223,24 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
     const raw = data.choices[0]?.message?.content || '';
 
     // The system prompt instructs the model to return JSON with user_facing_response.
-    // Parse it and extract only what the user should see.
-    try {
-      const parsed = JSON.parse(raw);
-      if (parsed.user_facing_response !== undefined) {
-        return parsed.user_facing_response;
+    // Try multiple strategies to extract it robustly.
+    const candidates: string[] = [];
+
+    // 1. Strip markdown code fences
+    candidates.push(raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim());
+    // 2. Extract first {...} block (handles text before/after JSON)
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (jsonMatch) candidates.push(jsonMatch[0]);
+
+    for (const candidate of candidates) {
+      try {
+        const parsed = JSON.parse(candidate);
+        if (parsed.user_facing_response !== undefined) {
+          return parsed.user_facing_response;
+        }
+      } catch {
+        // Try next candidate
       }
-    } catch {
-      // Not JSON — model returned plain text, use as-is
     }
     return raw;
   };
