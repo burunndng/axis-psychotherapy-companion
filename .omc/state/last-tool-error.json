@@ -1,7 +1,7 @@
 {
-  "tool_name": "Read",
-  "tool_input_preview": "{\"file_path\":\"/home/trip/Downloads/axis---psychotherapy-companion\"}",
-  "error": "EISDIR: illegal operation on a directory, read '/home/trip/Downloads/axis---psychotherapy-companion'",
-  "timestamp": "2026-03-14T01:48:18.132Z",
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"node -v && npx prisma --version && ls -la prisma*\",\"description\":\"Check Node version and Prisma status\"}",
+  "error": "Exit code 1\nv25.6.1\nFailed to parse syntax of config file at \"/home/trip/Downloads/axis---psychotherapy-companion/prisma.config.js\"\n\nv25.6.1\nFailed to parse syntax of config file at \"/home/trip/Downloads/axis---psychotherapy-companion/prisma.config.js\"",
+  "timestamp": "2026-03-14T02:11:10.710Z",
   "retry_count": 1
 }
