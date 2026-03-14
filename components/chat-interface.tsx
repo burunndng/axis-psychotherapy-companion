@@ -75,7 +75,7 @@ export function ChatInterface({ config, onReset, initialMessages }: ChatInterfac
       case 'kimi':
         return 'moonshotai/kimi-k2.5';
       case 'mimo':
-        return 'xiaomi/mimo-v2-flash@preset/aiwass';
+        return 'inception/mercury-2';
       case 'grok':
       default:
         return 'x-ai/grok-4.1-fast';
