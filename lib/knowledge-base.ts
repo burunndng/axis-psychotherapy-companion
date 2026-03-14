@@ -318,7 +318,8 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
 ];
 
 /**
- * Retrieve relevant knowledge entries based on keywords
+ * Retrieve relevant knowledge entries based on keywords (LEGACY — keyword matching only)
+ * Use semanticSearch() for semantic TF-IDF matching instead.
  */
 export function retrieveRelevantKnowledge(keywords: string[]): KnowledgeEntry[] {
   const keywordSet = new Set(keywords.map(k => k.toLowerCase()));
@@ -345,25 +346,140 @@ export function getKnowledgeByTopic(topic: string): KnowledgeEntry[] {
 }
 
 /**
- * Format knowledge entries for augmenting system prompt
+ * Format knowledge entries for augmenting system prompt (invisible, concise addendum)
+ * Used by buildKnowledgeAddendum() for on-demand injection
  */
 export function formatKnowledgeForPrompt(entries: KnowledgeEntry[]): string {
   if (entries.length === 0) return '';
 
   return `
-\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-CLINICAL KNOWLEDGE BASE (Evidence-Based Context)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLINICAL REFERENCE (for this response only — use if directly relevant):
 
-${entries.map((entry, idx) => `
-[${idx + 1}] ${entry.technique} (${entry.source})
-Topic: ${entry.topic}
-Description: ${entry.description}
+${entries.map((entry) => `
+[${entry.technique}]
+${entry.description}
 Implementation: ${entry.implementation}
 `).join('\n')}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-`;
+This is background context. Use it only if it directly illuminates what the user just said.
+Do not name frameworks, cite sources, or reference this context explicitly.`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// SEMANTIC TF-IDF ENGINE — On-Demand RAG
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Build a term frequency index from all knowledge entries
+ * Returns Map<term, [freq_in_entry_0, freq_in_entry_1, ...]>
+ */
+function buildTermIndex(entries: KnowledgeEntry[]): Map<string, number[]> {
+  const termIndex = new Map<string, number[]>();
+
+  entries.forEach((entry, entryIdx) => {
+    // Tokenize entry text: description + technique + keywords
+    const text = `${entry.description} ${entry.technique} ${entry.keywords.join(' ')}`.toLowerCase();
+    const tokens = text.split(/\W+/).filter(t => t.length > 2); // Skip 2-letter words
+
+    tokens.forEach(token => {
+      if (!termIndex.has(token)) {
+        termIndex.set(token, new Array(entries.length).fill(0));
+      }
+      const freq = termIndex.get(token)!;
+      freq[entryIdx] += 1;
+    });
+  });
+
+  return termIndex;
+}
+
+/**
+ * Compute TF-IDF vector for a given text string
+ * Returns Map<term, tfidf_score>
+ */
+function computeTFIDF(text: string, termIndex: Map<string, number[]>, numDocs: number): Map<string, number> {
+  const tokens = text.toLowerCase().split(/\W+/).filter(t => t.length > 2);
+  const tf = new Map<string, number>();
+
+  // Compute term frequency
+  tokens.forEach(token => {
+    tf.set(token, (tf.get(token) || 0) + 1);
+  });
+
+  // Convert to TF-IDF
+  const tfidf = new Map<string, number>();
+  tf.forEach((freq, term) => {
+    const docFreq = termIndex.get(term);
+    if (!docFreq) return;
+
+    const idf = Math.log(numDocs / (docFreq.filter(f => f > 0).length + 1));
+    const tfValue = freq / tokens.length;
+    tfidf.set(term, tfValue * idf);
+  });
+
+  return tfidf;
+}
+
+/**
+ * Cosine similarity between two TF-IDF vectors
+ */
+function cosineSimilarity(
+  vec1: Map<string, number>,
+  vec2: Map<string, number>
+): number {
+  let dotProduct = 0;
+  let mag1 = 0;
+  let mag2 = 0;
+
+  // Dot product
+  vec1.forEach((val1, term) => {
+    const val2 = vec2.get(term) || 0;
+    dotProduct += val1 * val2;
+    mag1 += val1 * val1;
+  });
+
+  vec2.forEach((val2, term) => {
+    if (!vec1.has(term)) {
+      mag2 += val2 * val2;
+    }
+  });
+
+  mag1 = Math.sqrt(mag1);
+  mag2 += mag1 > 0 ? Math.sqrt(mag2) : 0;
+  mag2 = mag2 || Math.sqrt(vec2.size); // Prevent division by zero
+
+  return mag1 > 0 && mag2 > 0 ? dotProduct / (mag1 * mag2) : 0;
+}
+
+/**
+ * Semantic search via TF-IDF cosine similarity
+ * Returns top-K knowledge entries with similarity scores
+ *
+ * @param query - User conversation context (usually last 2-3 messages)
+ * @param topK - Number of results to return (default: 2)
+ */
+export function semanticSearch(
+  query: string,
+  topK: number = 2
+): Array<{ entry: KnowledgeEntry; score: number }> {
+  if (!query.trim()) return [];
+
+  const termIndex = buildTermIndex(KNOWLEDGE_BASE);
+  const queryVector = computeTFIDF(query, termIndex, KNOWLEDGE_BASE.length);
+
+  const results = KNOWLEDGE_BASE.map((entry) => {
+    const entryText = `${entry.description} ${entry.technique} ${entry.keywords.join(' ')}`;
+    const entryVector = computeTFIDF(entryText, termIndex, KNOWLEDGE_BASE.length);
+    const similarity = cosineSimilarity(queryVector, entryVector);
+
+    return { entry, score: similarity };
+  });
+
+  // Sort by score descending and return top-K
+  return results
+    .sort((a, b) => b.score - a.score)
+    .slice(0, topK)
+    .filter(r => r.score > 0); // Only include non-zero scores
 }
 
 export default KNOWLEDGE_BASE;

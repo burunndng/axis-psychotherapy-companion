@@ -119,38 +119,50 @@
   "hotPaths": [
     {
       "path": "components/chat-interface.tsx",
-      "accessCount": 25,
-      "lastAccessed": 1773451671205,
-      "type": "file"
-    },
-    {
-      "path": "components/session-setup.tsx",
-      "accessCount": 10,
-      "lastAccessed": 1773451440275,
+      "accessCount": 31,
+      "lastAccessed": 1773451759586,
       "type": "file"
     },
     {
       "path": "lib/axis-prompt.ts",
+      "accessCount": 13,
+      "lastAccessed": 1773451738222,
+      "type": "file"
+    },
+    {
+      "path": "components/session-setup.tsx",
+      "accessCount": 13,
+      "lastAccessed": 1773451886799,
+      "type": "file"
+    },
+    {
+      "path": "components/ritual-threshold.tsx",
       "accessCount": 9,
-      "lastAccessed": 1773451507583,
+      "lastAccessed": 1773451823009,
       "type": "file"
     },
     {
       "path": "package.json",
-      "accessCount": 7,
-      "lastAccessed": 1773450695451,
-      "type": "file"
-    },
-    {
-      "path": "app/page.tsx",
-      "accessCount": 6,
-      "lastAccessed": 1773451270100,
+      "accessCount": 8,
+      "lastAccessed": 1773451703615,
       "type": "file"
     },
     {
       "path": "app/globals.css",
-      "accessCount": 5,
-      "lastAccessed": 1773451210874,
+      "accessCount": 7,
+      "lastAccessed": 1773451883935,
+      "type": "file"
+    },
+    {
+      "path": "app/page.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1773451890707,
+      "type": "file"
+    },
+    {
+      "path": "lib/knowledge-base.ts",
+      "accessCount": 6,
+      "lastAccessed": 1773451727830,
       "type": "file"
     },
     {
@@ -163,12 +175,6 @@
       "path": "app/layout.tsx",
       "accessCount": 4,
       "lastAccessed": 1773450695499,
-      "type": "file"
-    },
-    {
-      "path": "lib/knowledge-base.ts",
-      "accessCount": 4,
-      "lastAccessed": 1773451514414,
       "type": "file"
     },
     {
@@ -187,12 +193,6 @@
       "path": "lib/firebase.ts",
       "accessCount": 2,
       "lastAccessed": 1773450191912,
-      "type": "file"
-    },
-    {
-      "path": "components/ritual-threshold.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1773451233859,
       "type": "file"
     },
     {

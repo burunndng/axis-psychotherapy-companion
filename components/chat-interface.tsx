@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { SessionConfig, buildAxisPrompt } from '@/lib/axis-prompt';
+import { SessionConfig, buildAxisPrompt, buildKnowledgeAddendum } from '@/lib/axis-prompt';
+import { semanticSearch } from '@/lib/knowledge-base';
 import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Language } from '@/lib/session-export';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -107,8 +108,63 @@ export function ChatInterface({ config, onReset }: ChatInterfaceProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const callOpenRouter = async (conversationMessages: OpenRouterMessage[], systemInstruction: string): Promise<string> => {
+  const shouldUseKnowledge = async (
+    conversationMessages: OpenRouterMessage[]
+  ): Promise<{ needed: boolean; query?: string }> => {
+    if (!apiKey) return { needed: false };
+
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : '',
+        },
+        body: JSON.stringify({
+          model: 'x-ai/grok-4.1-fast',
+          messages: [
+            {
+              role: 'system',
+              content: `You are a clinical knowledge router. Given this conversation excerpt, decide:
+1. Does this moment call for specific clinical technique knowledge? (defense analysis, ego states, ACT techniques, script work, etc.)
+2. If yes, provide a 3-10 word search query describing what technique is relevant.
+
+Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
+            },
+            ...conversationMessages.slice(-2) // Last 2 messages only
+          ],
+          temperature: 0.3,
+          max_tokens: 80,
+        }),
+      });
+
+      if (!response.ok) {
+        return { needed: false };
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content || '';
+
+      try {
+        const parsed = JSON.parse(content);
+        return { needed: parsed.needed ?? false, query: parsed.query };
+      } catch {
+        return { needed: false };
+      }
+    } catch (error) {
+      console.error('Router call failed, skipping knowledge injection:', error);
+      return { needed: false };
+    }
+  };
+
+  const callOpenRouter = async (conversationMessages: OpenRouterMessage[], systemInstruction: string, knowledgeAddendum?: string): Promise<string> => {
     if (!apiKey) throw new Error('API key not configured');
+
+    // Inject knowledge addendum into system instruction if provided
+    const finalSystemInstruction = knowledgeAddendum
+      ? `${systemInstruction}\n\n${knowledgeAddendum}`
+      : systemInstruction;
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -120,7 +176,7 @@ export function ChatInterface({ config, onReset }: ChatInterfaceProps) {
       body: JSON.stringify({
         model: 'x-ai/grok-4.1-fast',
         messages: [
-          { role: 'system', content: systemInstruction },
+          { role: 'system', content: finalSystemInstruction },
           ...conversationMessages
         ],
         temperature: 0.8,
@@ -155,7 +211,22 @@ export function ChatInterface({ config, onReset }: ChatInterfaceProps) {
       }));
       conversationMessages.push({ role: 'user', content: userMessage });
 
-      const responseText = await callOpenRouter(conversationMessages, systemInstruction);
+      // ROUTER CALL: Decide if knowledge is needed
+      const routerDecision = await shouldUseKnowledge(conversationMessages);
+      let knowledgeAddendum: string | undefined;
+
+      if (routerDecision.needed && routerDecision.query) {
+        // Semantic search for relevant knowledge
+        const searchResults = semanticSearch(routerDecision.query, 2);
+        if (searchResults.length > 0) {
+          knowledgeAddendum = buildKnowledgeAddendum(
+            searchResults.map(r => r.entry)
+          );
+        }
+      }
+
+      // Call AXIS with optional knowledge addendum
+      const responseText = await callOpenRouter(conversationMessages, systemInstruction, knowledgeAddendum);
 
       if (responseText) {
         setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'model', text: responseText }]);

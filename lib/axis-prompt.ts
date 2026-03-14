@@ -11,21 +11,11 @@ export interface SessionConfig {
   urgency: Urgency;
 }
 
-import { retrieveRelevantKnowledge, formatKnowledgeForPrompt } from './knowledge-base';
+import { formatKnowledgeForPrompt, KnowledgeEntry } from './knowledge-base';
 
 export function buildAxisPrompt(config: SessionConfig): string {
-  // Retrieve relevant clinical knowledge based on session context
-  const sessionKeywords = [
-    config.challengeLevel,
-    config.activityType.toLowerCase(),
-    config.helpType.toLowerCase(),
-    'insight',
-    'change',
-    'pattern'
-  ];
-
-  const relevantKnowledge = retrieveRelevantKnowledge(sessionKeywords);
-  const knowledgeContext = formatKnowledgeForPrompt(relevantKnowledge);
+  // Knowledge is now injected on-demand via semanticSearch() in chat-interface.tsx
+  // No longer injected always-on
   const identityTexts: Record<ChallengeLevel, string> = {
     default: `You are AXIS — a sharp, deeply perceptive thinking partner. You help the user think more clearly and honestly. You notice what's underneath — the patterns, protections, and dynamics they can't yet see. You speak plainly.`,
     gentle: `You are AXIS — a warm but precise thinking partner. You hold space without coddling. You help the user unknot their thinking with patience and honesty, meeting them where they are — including the parts they haven't met yet.`,
@@ -56,7 +46,6 @@ export function buildAxisPrompt(config: SessionConfig): string {
   return `════════════════════════════════════════════
 AXIS SESSION PROTOCOL
 ════════════════════════════════════════════
-${knowledgeContext}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 IDENTITY
@@ -212,4 +201,13 @@ No filler. No praise. Precision over completeness.
 
 
 ════════════════════════════════════════════`;
+}
+
+/**
+ * Build a small, invisible knowledge addendum for injection ONLY when router decides it's needed
+ * Not always-on — used conditionally in chat-interface.tsx
+ */
+export function buildKnowledgeAddendum(entries: KnowledgeEntry[]): string {
+  if (entries.length === 0) return '';
+  return formatKnowledgeForPrompt(entries);
 }

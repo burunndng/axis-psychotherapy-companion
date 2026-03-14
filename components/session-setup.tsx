@@ -107,7 +107,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
       y: 0,
       transition: {
         delay: i * 0.06,
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 220,
         damping: 26,
         mass: 0.9,

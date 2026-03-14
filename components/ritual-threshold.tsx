@@ -87,7 +87,10 @@ function MetatronGeometry() {
         return (
           <line key={`circle-${idx}`}>
             <bufferGeometry>
-              <bufferAttribute attach="attributes-position" array={positions} itemSize={3} />
+              <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
+              />
             </bufferGeometry>
             <lineBasicMaterial
               color={0x10b981}
@@ -111,7 +114,10 @@ function MetatronGeometry() {
         return (
           <line key={`outer-line-${idx}`}>
             <bufferGeometry>
-              <bufferAttribute attach="attributes-position" array={positions} itemSize={3} />
+              <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
+              />
             </bufferGeometry>
             <lineBasicMaterial color={0x10b981} transparent opacity={0.4} linewidth={1} />
           </line>
@@ -129,7 +135,10 @@ function MetatronGeometry() {
         return (
           <line key={`middle-line-${idx}`}>
             <bufferGeometry>
-              <bufferAttribute attach="attributes-position" array={positions} itemSize={3} />
+              <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
+              />
             </bufferGeometry>
             <lineBasicMaterial color={0x10b981} transparent opacity={0.35} linewidth={1} />
           </line>
@@ -147,7 +156,10 @@ function MetatronGeometry() {
         return (
           <line key={`spoke-${idx}`}>
             <bufferGeometry>
-              <bufferAttribute attach="attributes-position" array={positions} itemSize={3} />
+              <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
+              />
             </bufferGeometry>
             <lineBasicMaterial color={0x10b981} transparent opacity={0.25} linewidth={0.8} />
           </line>
@@ -164,7 +176,10 @@ function MetatronGeometry() {
         return (
           <line key={`to-center-${idx}`}>
             <bufferGeometry>
-              <bufferAttribute attach="attributes-position" array={positions} itemSize={3} />
+              <bufferAttribute
+                attach="attributes-position"
+                args={[positions, 3]}
+              />
             </bufferGeometry>
             <lineBasicMaterial color={0x10b981} transparent opacity={0.15} linewidth={0.6} />
           </line>
