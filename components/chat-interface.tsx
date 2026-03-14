@@ -116,7 +116,7 @@ export function ChatInterface({ config }: ChatInterfaceProps) {
         'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : '',
       },
       body: JSON.stringify({
-        model: 'x-ai/grok-4.1-flash',
+        model: 'x-ai/grok-4.1-fast',
         messages: [
           { role: 'system', content: systemInstruction },
           ...conversationMessages
