@@ -6,12 +6,78 @@ import { SessionConfig, ChallengeLevel, ActivityType, HelpType, Urgency } from '
 import { RitualThreshold } from './ritual-threshold';
 import { motion } from 'motion/react';
 
+type Language = 'en' | 'es';
+
+const i18n = {
+  en: {
+    title: 'AXIS Protocol',
+    subtitle: 'Configure the parameters for your session.',
+    language: 'Language',
+    challengeLevel: 'Challenge Level',
+    sessionIntention: 'Session Intention',
+    intentionPlaceholder: 'What is the core focus today?',
+    activityType: 'Activity Type',
+    helpType: 'Help Type',
+    urgency: 'Urgency',
+    begin: 'Begin Session',
+    welcomeBack: 'Welcome back, ',
+    crisisMode: 'Crisis mode activated.',
+    crisisDesc: 'If you\'re in immediate danger, please call emergency services or a crisis helpline.',
+    default: 'Default — Sharp, deeply perceptive',
+    gentle: 'Gentle — Warm but precise, patient',
+    balanced: 'Balanced — Directness with care',
+    intense: 'Intense — Relentless, breakthrough-focused',
+    socratic: 'Socratic — Questions that illuminate',
+    explore: 'Explore',
+    debrief: 'Debrief',
+    plan: 'Plan',
+    process: 'Process',
+    decide: 'Decide',
+    understand: 'Understand',
+    validate: 'Validate',
+    vent: 'Vent',
+    reflective: 'Reflective',
+    crisis: 'Crisis',
+  },
+  es: {
+    title: 'Protocolo AXIS',
+    subtitle: 'Configura los parámetros de tu sesión.',
+    language: 'Idioma',
+    challengeLevel: 'Nivel de Desafío',
+    sessionIntention: 'Intención de Sesión',
+    intentionPlaceholder: '¿Cuál es el enfoque principal hoy?',
+    activityType: 'Tipo de Actividad',
+    helpType: 'Tipo de Ayuda',
+    urgency: 'Urgencia',
+    begin: 'Comenzar Sesión',
+    welcomeBack: 'Bienvenido de vuelta, ',
+    crisisMode: 'Modo de crisis activado.',
+    crisisDesc: 'Si estás en peligro inmediato, por favor llama a servicios de emergencia o a una línea de crisis.',
+    default: 'Predeterminado — Agudo y profundamente perspicaz',
+    gentle: 'Suave — Cálido pero preciso, paciente',
+    balanced: 'Equilibrado — Directividad con cuidado',
+    intense: 'Intenso — Implacable, enfocado en avance',
+    socratic: 'Socrático — Preguntas que iluminan',
+    explore: 'Explorar',
+    debrief: 'Reflexión',
+    plan: 'Planificar',
+    process: 'Procesar',
+    decide: 'Decidir',
+    understand: 'Entender',
+    validate: 'Validar',
+    vent: 'Desahogar',
+    reflective: 'Reflexivo',
+    crisis: 'Crisis',
+  },
+};
+
 interface SessionSetupProps {
   onStart: (config: SessionConfig) => void;
 }
 
 export function SessionSetup({ onStart }: SessionSetupProps) {
   const { user } = useUser();
+  const [language, setLanguage] = useState<Language>('en');
   const [config, setConfig] = useState<SessionConfig>({
     challengeLevel: 'default',
     intention: '',
@@ -19,6 +85,8 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
     helpType: 'Process',
     urgency: 'Reflective',
   });
+
+  const texts = i18n[language];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -66,32 +134,58 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
       />
 
       <div className="relative z-10">
-        {/* Greeting with Clerk user info */}
-        {user && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="text-sm text-slate-400 mb-4"
-          >
-            Welcome back, <span className="text-emerald-400/80">{user.firstName || 'there'}</span>.
-          </motion.p>
-        )}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            {/* Greeting with Clerk user info */}
+            {user && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="text-sm text-slate-400 mb-4"
+              >
+                {texts.welcomeBack}<span className="text-emerald-400/80">{user.firstName || 'there'}</span>.
+              </motion.p>
+            )}
 
-        {/* Title */}
-        <motion.div
-          custom={0}
-          variants={fieldVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <h1 className="text-4xl font-serif text-slate-100 mb-2 tracking-tight">
-            AXIS Protocol
-          </h1>
-          <p className="text-slate-400 text-sm">
-            Configure the parameters for your session.
-          </p>
-        </motion.div>
+            {/* Title */}
+            <motion.div
+              custom={0}
+              variants={fieldVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <h1 className="text-4xl font-serif text-slate-100 mb-2 tracking-tight">
+                {texts.title}
+              </h1>
+              <p className="text-slate-400 text-sm">
+                {texts.subtitle}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Language Selector (Top Right) */}
+          <motion.div
+            custom={0}
+            variants={fieldVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="flex flex-col items-end gap-2">
+              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">
+                {texts.language}
+              </label>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="input-void w-24"
+              >
+                <option value="en">English</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Crisis banner */}
         {isCrisis && (
@@ -102,9 +196,9 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
             transition={{ type: 'spring', stiffness: 220, damping: 26 }}
             className="my-6 p-4 bg-amber-900/20 border border-amber-500/40 rounded-lg text-amber-200 text-sm"
           >
-            <p className="font-medium">Crisis mode activated.</p>
+            <p className="font-medium">{texts.crisisMode}</p>
             <p className="text-xs text-amber-300/80 mt-1">
-              If you're in immediate danger, please call emergency services or a crisis helpline.
+              {texts.crisisDesc}
             </p>
           </motion.div>
         )}
@@ -122,7 +216,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
             className="space-y-2"
           >
             <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Challenge Level
+              {texts.challengeLevel}
             </label>
             <select
               name="challengeLevel"
@@ -130,11 +224,11 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
               onChange={handleChange}
               className="input-void"
             >
-              <option value="default">Default — Sharp, deeply perceptive</option>
-              <option value="gentle">Gentle — Warm but precise, patient</option>
-              <option value="balanced">Balanced — Directness with care</option>
-              <option value="intense">Intense — Relentless, breakthrough-focused</option>
-              <option value="socratic">Socratic — Questions that illuminate</option>
+              <option value="default">{texts.default}</option>
+              <option value="gentle">{texts.gentle}</option>
+              <option value="balanced">{texts.balanced}</option>
+              <option value="intense">{texts.intense}</option>
+              <option value="socratic">{texts.socratic}</option>
             </select>
           </motion.div>
 
@@ -145,14 +239,14 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
             className="space-y-2"
           >
             <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Session Intention <span className="text-amber-400/60">*</span>
+              {texts.sessionIntention} <span className="text-amber-400/60">*</span>
             </label>
             <input
               type="text"
               name="intention"
               value={config.intention}
               onChange={handleChange}
-              placeholder="What is the core focus today?"
+              placeholder={texts.intentionPlaceholder}
               className="input-void"
               required
             />
@@ -166,7 +260,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
               className="space-y-2"
             >
               <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-                Activity Type
+                {texts.activityType}
               </label>
               <select
                 name="activityType"
@@ -174,9 +268,9 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
                 onChange={handleChange}
                 className="input-void"
               >
-                <option value="Explore">Explore</option>
-                <option value="Debrief">Debrief</option>
-                <option value="Plan">Plan</option>
+                <option value="Explore">{texts.explore}</option>
+                <option value="Debrief">{texts.debrief}</option>
+                <option value="Plan">{texts.plan}</option>
               </select>
             </motion.div>
 
@@ -186,7 +280,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
               className="space-y-2"
             >
               <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-                Help Type
+                {texts.helpType}
               </label>
               <select
                 name="helpType"
@@ -194,11 +288,11 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
                 onChange={handleChange}
                 className="input-void"
               >
-                <option value="Process">Process</option>
-                <option value="Decide">Decide</option>
-                <option value="Understand">Understand</option>
-                <option value="Validate">Validate</option>
-                <option value="Vent">Vent</option>
+                <option value="Process">{texts.process}</option>
+                <option value="Decide">{texts.decide}</option>
+                <option value="Understand">{texts.understand}</option>
+                <option value="Validate">{texts.validate}</option>
+                <option value="Vent">{texts.vent}</option>
               </select>
             </motion.div>
           </div>
@@ -210,7 +304,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
             className="space-y-2"
           >
             <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">
-              Urgency
+              {texts.urgency}
             </label>
             <select
               name="urgency"
@@ -220,8 +314,8 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
                 isCrisis ? 'border-amber-500/50 focus:border-amber-500/70' : ''
               }`}
             >
-              <option value="Reflective">Reflective</option>
-              <option value="Crisis">Crisis</option>
+              <option value="Reflective">{texts.reflective}</option>
+              <option value="Crisis">{texts.crisis}</option>
             </select>
           </motion.div>
 
@@ -243,7 +337,7 @@ export function SessionSetup({ onStart }: SessionSetupProps) {
                   : 'bg-void-4 border-white/5 text-slate-200 hover:border-emerald-500/30'
               }`}
             >
-              Begin Session
+              {texts.begin}
             </motion.button>
           </motion.div>
         </motion.form>
