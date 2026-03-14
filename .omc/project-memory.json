@@ -119,14 +119,32 @@
   "hotPaths": [
     {
       "path": "components/chat-interface.tsx",
-      "accessCount": 13,
-      "lastAccessed": 1773450240007,
+      "accessCount": 22,
+      "lastAccessed": 1773451304235,
       "type": "file"
     },
     {
       "path": "package.json",
+      "accessCount": 7,
+      "lastAccessed": 1773450695451,
+      "type": "file"
+    },
+    {
+      "path": "app/page.tsx",
       "accessCount": 6,
-      "lastAccessed": 1773450199198,
+      "lastAccessed": 1773451270100,
+      "type": "file"
+    },
+    {
+      "path": "app/globals.css",
+      "accessCount": 5,
+      "lastAccessed": 1773451210874,
+      "type": "file"
+    },
+    {
+      "path": "components/session-setup.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1773451254197,
       "type": "file"
     },
     {
@@ -142,28 +160,22 @@
       "type": "file"
     },
     {
+      "path": "app/layout.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1773450695499,
+      "type": "file"
+    },
+    {
       "path": "components/auth-provider.tsx",
       "accessCount": 3,
       "lastAccessed": 1773450209457,
       "type": "file"
     },
     {
-      "path": "app/layout.tsx",
+      "path": "",
       "accessCount": 3,
-      "lastAccessed": 1773450214764,
-      "type": "file"
-    },
-    {
-      "path": "components/session-setup.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1773448510580,
-      "type": "file"
-    },
-    {
-      "path": "app/globals.css",
-      "accessCount": 2,
-      "lastAccessed": 1773448846047,
-      "type": "file"
+      "lastAccessed": 1773451006041,
+      "type": "directory"
     },
     {
       "path": "lib/firebase.ts",
@@ -172,10 +184,10 @@
       "type": "file"
     },
     {
-      "path": "",
+      "path": "components/ritual-threshold.tsx",
       "accessCount": 2,
-      "lastAccessed": 1773450243893,
-      "type": "directory"
+      "lastAccessed": 1773451233859,
+      "type": "file"
     },
     {
       "path": "metadata.json",
@@ -187,12 +199,6 @@
       "path": "README.md",
       "accessCount": 1,
       "lastAccessed": 1773448334296,
-      "type": "file"
-    },
-    {
-      "path": "app/page.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1773448337157,
       "type": "file"
     },
     {

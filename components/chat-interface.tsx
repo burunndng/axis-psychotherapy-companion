@@ -7,10 +7,12 @@ import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Lang
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Send, Download, Printer, FileJson } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ChatInterfaceProps {
   config: SessionConfig;
+  onReset?: () => void;
 }
 
 interface Message {
@@ -287,7 +289,7 @@ export function ChatInterface({ config }: ChatInterfaceProps) {
               </select>
             </div>
             <button
-              onClick={() => window.location.reload()}
+              onClick={onReset || (() => window.location.reload())}
               className="px-6 py-3 bg-void-2 text-slate-200 font-sans font-medium tracking-wide rounded-lg border border-white/5 hover:border-emerald-500/30 transition-colors"
             >
               {texts.startNewSession}
@@ -298,13 +300,36 @@ export function ChatInterface({ config }: ChatInterfaceProps) {
     );
   }
 
+  const isCrisis = config.urgency === 'Crisis';
+
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] w-full bg-void-0 rounded-2xl border border-white/5 shadow-2xl overflow-hidden relative">
+    <div className={`flex flex-col h-[calc(100vh-4rem)] w-full rounded-2xl border shadow-2xl overflow-hidden relative transition-all duration-300 ${
+      isCrisis
+        ? 'bg-void-0 border-amber-500/30'
+        : 'bg-void-0 border-white/5'
+    }`}>
+      {/* Crisis Banner */}
+      {isCrisis && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="px-8 py-3 bg-amber-900/20 border-b border-amber-500/40 text-amber-200 text-sm font-medium"
+        >
+          Crisis mode active — Emergency resources available
+        </motion.div>
+      )}
+
       {/* Header */}
-      <div className="px-8 py-6 border-b border-white/5 bg-void-1/80 backdrop-blur-md z-10 flex items-center justify-between">
+      <div className={`px-8 py-6 border-b backdrop-blur-md z-10 flex items-center justify-between transition-all duration-300 ${
+        isCrisis
+          ? 'border-amber-500/20 bg-void-1/80'
+          : 'border-white/5 bg-void-1/80'
+      }`}>
         <div>
           <h2 className="text-2xl font-serif text-slate-100 tracking-wide">AXIS</h2>
-          <p className="text-xs text-slate-500 uppercase tracking-widest mt-1">
+          <p className={`text-xs uppercase tracking-widest mt-1 ${
+            isCrisis ? 'text-amber-300/60' : 'text-slate-500'
+          }`}>
             {config.challengeLevel} mode • {config.urgency}
           </p>
         </div>
@@ -322,10 +347,15 @@ export function ChatInterface({ config }: ChatInterfaceProps) {
           <button
             onClick={handleEndSession}
             disabled={isLoading}
-            className="px-6 py-2 text-sm font-medium uppercase tracking-wider text-slate-200 bg-emerald-900/30 border border-emerald-500/50 rounded-md hover:bg-emerald-900/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`px-6 py-2 text-sm font-medium uppercase tracking-wider rounded-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+              isCrisis
+                ? 'text-amber-200 bg-amber-900/30 border border-amber-500/50 hover:bg-amber-900/50'
+                : 'text-slate-200 bg-emerald-900/30 border border-emerald-500/50 hover:bg-emerald-900/50'
+            }`}
           >
             {texts.endSession}
           </button>
+          <UserButton />
         </div>
       </div>
 

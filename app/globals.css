@@ -2,90 +2,307 @@
 @plugin "@tailwindcss/typography";
 
 /* ════════════════════════════════════════════════════════════════
-   ALCHEMICAL VOID DESIGN SYSTEM - AXIS IMPLEMENTATION
-   Dark, sacred, contemplative UX for psychotherapy companion
+   ALCHEMICAL VOID DESIGN SYSTEM — AXIS IMPLEMENTATION
+   Full 8-Domain Implementation: Motion, Elevation, Typography,
+   Spatial, Sacred Geometry, Psychological Safety, Components, Icons
    ════════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* Elevation Ladder - 5-Level Dark UI System */
-  --color-void-0: #020617;    /* Level 0: Base Void - Page background */
-  --color-void-1: #030712;    /* Level 1: Deep Panels - Sidebars */
-  --color-void-2: #0B1120;    /* Level 2: Cards - Standard tiles */
-  --color-void-3: #111827;    /* Level 3: Active - Highlighted cards */
-  --color-void-4: #1F2937;    /* Level 4: Overlay - Modals */
+  /* ── Elevation Ladder (5-Level, OKLCH tinted neutrals) ── */
+  --color-void-0: oklch(8% 0.01 250);    /* Base Void — page background */
+  --color-void-1: oklch(9% 0.01 250);    /* Deep Panels — sidebars */
+  --color-void-2: oklch(12% 0.015 250);  /* Cards — standard tiles */
+  --color-void-3: oklch(16% 0.015 250);  /* Active — highlighted cards */
+  --color-void-4: oklch(21% 0.015 250);  /* Overlay — modals, focused containers */
 
+  /* ── Accent Palette (jewel tones, used at low opacity) ── */
+  --color-accent-emerald: oklch(60% 0.14 162);   /* Primary: insight, action */
+  --color-accent-violet: oklch(55% 0.16 290);    /* Introspection, depth */
+  --color-accent-teal: oklch(58% 0.13 195);      /* Clarity, presence */
+  --color-accent-amber: oklch(72% 0.15 75);      /* Warning — use sparingly */
+  --color-accent-rose: oklch(60% 0.18 12);       /* Crisis only — acute risk */
+
+  /* ── Text Hierarchy ── */
+  --color-text-primary: oklch(90% 0.005 250);
+  --color-text-secondary: oklch(65% 0.008 250);
+  --color-text-muted: oklch(45% 0.005 250);
+  --color-text-label: oklch(40% 0.005 250);
+
+  /* ── Fonts ── */
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
+
+  /* ── Spacing (4pt base) ── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* ── Z-Index Scale ── */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal-backdrop: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* ── Elevation Shadows ── */
+  --shadow-void-xs: 0 1px 2px oklch(0% 0 0 / 0.4);
+  --shadow-void-sm: 0 2px 8px oklch(0% 0 0 / 0.5), inset 0 1px 0 oklch(100% 0 0 / 0.04);
+  --shadow-void-md: 0 4px 24px oklch(0% 0 0 / 0.6), inset 0 1px 0 oklch(100% 0 0 / 0.05);
+  --shadow-void-lg: 0 8px 40px oklch(0% 0 0 / 0.7), inset 0 1px 0 oklch(100% 0 0 / 0.06);
 }
 
-/* Typography System - Fluid & Hierarchical */
+/* ══════════════════════════════════════════════
+   TYPOGRAPHY — Fluid, Semantic, Hierarchical
+   ══════════════════════════════════════════════ */
+
 body {
-  @apply bg-void-0 text-slate-200 antialiased selection:bg-emerald-900/50 selection:text-emerald-50;
-  line-height: 1.6;
+  background-color: var(--color-void-0);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.65;
   letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+::selection {
+  background-color: oklch(25% 0.05 162);
+  color: oklch(90% 0.08 162);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply font-serif;
+  font-family: var(--font-serif);
   line-height: 1.2;
   letter-spacing: -0.02em;
   font-weight: 500;
+  color: var(--color-text-primary);
 }
 
-/* Fluid Typography with CSS Clamp */
-h1 {
-  font-size: clamp(1.8rem, 1.5rem + 1.2vw, 2.8rem);
-}
-
-h2 {
-  font-size: clamp(1.4rem, 1.2rem + 0.8vw, 2rem);
-}
-
-h3 {
-  font-size: clamp(1.1rem, 1rem + 0.4vw, 1.5rem);
-}
+/* Fluid type scale — display → micro */
+h1 { font-size: clamp(2.4rem, 1.9rem + 1.8vw, 3.4rem); }
+h2 { font-size: clamp(1.6rem, 1.4rem + 0.8vw, 2.1rem); }
+h3 { font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.5rem); }
 
 body, button, input, textarea, select {
   font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.05rem);
 }
 
 label, .text-label {
-  @apply text-xs uppercase tracking-widest;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--color-text-label);
   line-height: 1.4;
 }
 
-/* Accent Palette - Jewel Tones (Low Opacity for Safety) */
+.text-micro {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted);
+}
+
+/* ══════════════════════════════════════════════
+   KEYFRAMES — Contemplative, Calm, Purposeful
+   ══════════════════════════════════════════════ */
+
+@keyframes void-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.025); opacity: 1; }
+}
+
+@keyframes void-glow-in {
+  from { opacity: 0; box-shadow: 0 0 0px oklch(60% 0.14 162 / 0); }
+  to   { opacity: 1; box-shadow: 0 0 24px oklch(60% 0.14 162 / 0.15); }
+}
+
+@keyframes void-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes void-shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+
+@keyframes void-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+  50%       { transform: scale(1.02) rotate(10deg); opacity: 0.9; }
+}
+
+/* ══════════════════════════════════════════════
+   COMPONENT UTILITIES
+   ══════════════════════════════════════════════ */
+
+/* Card */
+.card-void {
+  background-color: var(--color-void-2);
+  border: 1px solid oklch(100% 0 0 / 0.07);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-void-md);
+  transition: border-color 160ms cubic-bezier(0.25, 0.1, 0.25, 1),
+              box-shadow 160ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.card-void:hover {
+  border-color: oklch(100% 0 0 / 0.12);
+  box-shadow: var(--shadow-void-lg);
+}
+
+/* Buttons */
+.btn-void {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-void-4);
+  color: var(--color-text-primary);
+  border: 1px solid oklch(100% 0 0 / 0.08);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  box-shadow: var(--shadow-void-sm);
+  transition: background-color 160ms cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-color 160ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  cursor: pointer;
+}
+
+.btn-void:hover {
+  background-color: oklch(25% 0.015 250);
+  border-color: oklch(60% 0.14 162 / 0.3);
+}
+
+.btn-void-primary {
+  background-color: oklch(22% 0.04 162);
+  border-color: oklch(60% 0.14 162 / 0.5);
+  color: oklch(85% 0.1 162);
+}
+
+.btn-void-primary:hover {
+  background-color: oklch(26% 0.05 162);
+  border-color: oklch(60% 0.14 162 / 0.7);
+}
+
+.btn-void-crisis {
+  background-color: oklch(22% 0.06 75);
+  border-color: oklch(72% 0.15 75 / 0.5);
+  color: oklch(85% 0.1 75);
+}
+
+/* Inputs */
+.input-void {
+  background-color: var(--color-void-2);
+  border: 1px solid oklch(100% 0 0 / 0.1);
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  color: var(--color-text-primary);
+  width: 100%;
+  transition: background-color 160ms cubic-bezier(0.25, 0.1, 0.25, 1),
+              border-color 160ms cubic-bezier(0.25, 0.1, 0.25, 1),
+              box-shadow 160ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  box-shadow: inset 0 2px 4px oklch(0% 0 0 / 0.2);
+  outline: none;
+  resize: none;
+}
+
+.input-void::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input-void:focus {
+  background-color: var(--color-void-3);
+  border-color: oklch(60% 0.14 162 / 0.35);
+  box-shadow: inset 0 2px 4px oklch(0% 0 0 / 0.2),
+              0 0 0 1px oklch(60% 0.14 162 / 0.15);
+}
+
+/* Badge */
+.badge-void {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-void-3);
+  border: 1px solid oklch(100% 0 0 / 0.08);
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Crisis badge */
+.badge-crisis {
+  background-color: oklch(18% 0.06 75);
+  border-color: oklch(72% 0.15 75 / 0.35);
+  color: oklch(80% 0.12 75);
+}
+
+/* Skeleton loading shimmer */
+.skeleton-void {
+  background: linear-gradient(
+    90deg,
+    var(--color-void-2) 25%,
+    var(--color-void-3) 50%,
+    var(--color-void-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: void-shimmer 1.8s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════
+   GLASSMORPHISM — Restrained, No Stacking
+   ══════════════════════════════════════════════ */
+
+.glass {
+  background-color: oklch(9% 0.01 250 / 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid oklch(100% 0 0 / 0.08);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.05),
+              var(--shadow-void-md);
+}
+
+/* ══════════════════════════════════════════════
+   ACCENT GLOWS — Low opacity, jewel tones
+   ══════════════════════════════════════════════ */
+
 .glow-emerald {
-  @apply border-emerald-500/30;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+  border-color: oklch(60% 0.14 162 / 0.3);
+  box-shadow: 0 0 20px oklch(60% 0.14 162 / 0.12);
   transition: all 160ms cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .glow-emerald:hover {
-  @apply border-emerald-500/50;
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.25);
+  border-color: oklch(60% 0.14 162 / 0.5);
+  box-shadow: 0 0 30px oklch(60% 0.14 162 / 0.2);
 }
 
-/* Glassmorphism - Backdrop Blur for Overlays */
-.glass {
-  background-color: rgba(3, 7, 18, 0.75);
-  backdrop-filter: blur(12px);
-  @apply border border-white/10;
-  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+.glow-violet {
+  border-color: oklch(55% 0.16 290 / 0.25);
+  box-shadow: 0 0 20px oklch(55% 0.16 290 / 0.1);
 }
 
-/* Psychological Safety - Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.glow-amber {
+  border-color: oklch(72% 0.15 75 / 0.4);
+  box-shadow: 0 0 20px oklch(72% 0.15 75 / 0.15);
 }
 
-/* Vignette - Focus Attention */
+/* ══════════════════════════════════════════════
+   VIGNETTE & AMBIENT — Depth, focus
+   ══════════════════════════════════════════════ */
+
 .vignette {
   position: relative;
 }
@@ -94,14 +311,53 @@ label, .text-label {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.4) 100%);
+  background: radial-gradient(circle at 50% 50%, transparent 40%, oklch(0% 0 0 / 0.45) 100%);
   pointer-events: none;
   border-radius: inherit;
+  z-index: 0;
 }
 
-/* Scrollbar Styling - Subtle & Dark */
+/* Ambient glow header (emerald) */
+.ambient-emerald {
+  position: relative;
+}
+.ambient-emerald::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 200px;
+  background: radial-gradient(ellipse, oklch(60% 0.14 162 / 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ambient glow (violet) */
+.ambient-violet::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(ellipse, oklch(55% 0.16 290 / 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ══════════════════════════════════════════════
+   SCROLLBARS — Webkit + Firefox
+   ══════════════════════════════════════════════ */
+
+* {
+  scrollbar-color: var(--color-void-4) transparent;
+  scrollbar-width: thin;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -115,5 +371,20 @@ label, .text-label {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #475569;
+  background-color: oklch(35% 0.01 250);
+}
+
+/* ══════════════════════════════════════════════
+   PSYCHOLOGICAL SAFETY — Reduced Motion (WCAG)
+   ══════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
