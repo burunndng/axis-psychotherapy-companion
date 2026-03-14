@@ -5,9 +5,10 @@ import { useUser } from '@clerk/nextjs';
 import { SessionConfig, buildAxisPrompt, buildKnowledgeAddendum } from '@/lib/axis-prompt';
 import { semanticSearch } from '@/lib/knowledge-base';
 import { downloadSessionBrief, printSessionBrief, exportSessionToJSON, type Language } from '@/lib/session-export';
+import { saveBriefToFirestore, fetchUserBriefs, formatBriefDate, type StoredBrief } from '@/lib/firestore-briefs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Send, Download, Printer, FileJson } from 'lucide-react';
+import { Send, Download, Printer, FileJson, History } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -257,6 +258,15 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
 
   const [isDebriefing, setIsDebriefing] = useState(false);
   const [debriefContent, setDebriefContent] = useState<string | null>(null);
+  const [pastBriefs, setPastBriefs] = useState<StoredBrief[]>([]);
+  const [showBriefHistory, setShowBriefHistory] = useState(false);
+
+  // Fetch past briefs when debrief starts
+  useEffect(() => {
+    if (isDebriefing && user) {
+      fetchUserBriefs(user.id).then(setPastBriefs);
+    }
+  }, [isDebriefing, user]);
 
   const handleEndSession = async () => {
     if (!apiKey || isLoading || !user) return;
@@ -276,6 +286,17 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
 
       if (responseText) {
         setDebriefContent(responseText);
+
+        // Save brief to Firestore
+        try {
+          const sessionId = Date.now().toString();
+          await saveBriefToFirestore(user.id, responseText, config, messages, sessionId);
+          // Fetch updated brief history
+          const briefs = await fetchUserBriefs(user.id);
+          setPastBriefs(briefs);
+        } catch (firestoreError) {
+          console.error('Failed to save brief to Firestore:', firestoreError);
+        }
       }
     } catch (error) {
       console.error('Error ending session:', error);
@@ -296,21 +317,66 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
         <div className="max-w-3xl mx-auto w-full h-full flex flex-col">
           <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
             <h2 className="text-3xl font-serif text-slate-100 tracking-wide">{texts.sessionBrief}</h2>
-            <div className="relative" ref={exportMenuRef}>
-              <button
-                onClick={() => setShowExportMenu(!showExportMenu)}
-                className="px-4 py-2 bg-void-3 text-slate-200 text-sm font-medium tracking-wide rounded-lg border border-white/10 hover:border-emerald-500/30 transition-colors"
-              >
-                {texts.export}
-              </button>
-              <AnimatePresence>
-                {showExportMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-void-2 border border-white/10 rounded-lg shadow-lg z-50"
+            <div className="flex items-center gap-2">
+              {/* Brief History Button */}
+              {pastBriefs.length > 0 && (
+                <div className="relative">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setShowBriefHistory(!showBriefHistory)}
+                    className="px-4 py-2 bg-void-3 text-slate-200 text-sm font-medium tracking-wide rounded-lg border border-white/10 hover:border-violet-500/30 transition-colors flex items-center gap-2"
                   >
+                    <History className="w-4 h-4" />
+                    History ({pastBriefs.length})
+                  </motion.button>
+                  <AnimatePresence>
+                    {showBriefHistory && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute right-0 mt-2 w-64 bg-void-2 border border-white/10 rounded-lg shadow-lg z-50 max-h-72 overflow-y-auto"
+                      >
+                        {pastBriefs.map((brief) => (
+                          <button
+                            key={brief.id}
+                            onClick={() => {
+                              setDebriefContent(brief.brief);
+                              setShowBriefHistory(false);
+                            }}
+                            className="w-full text-left px-4 py-3 text-slate-300 hover:bg-void-3 hover:text-slate-100 transition-colors border-b border-white/5 last:border-b-0"
+                          >
+                            <p className="text-xs font-medium text-violet-400/80 mb-1">
+                              {brief.config.challengeLevel}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {formatBriefDate(brief.createdAt)}
+                            </p>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Export Menu Button */}
+              <div className="relative" ref={exportMenuRef}>
+                <button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  className="px-4 py-2 bg-void-3 text-slate-200 text-sm font-medium tracking-wide rounded-lg border border-white/10 hover:border-emerald-500/30 transition-colors"
+                >
+                  {texts.export}
+                </button>
+                <AnimatePresence>
+                  {showExportMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-void-2 border border-white/10 rounded-lg shadow-lg z-50"
+                    >
                     <button
                       onClick={() => {
                         printSessionBrief(debriefContent, config, language);
@@ -343,7 +409,8 @@ Reply ONLY as JSON: {"needed": true/false, "query": "search query or null"}`
                     </button>
                   </motion.div>
                 )}
-              </AnimatePresence>
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
